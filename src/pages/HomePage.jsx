@@ -1,10 +1,50 @@
+const OPEATION_TYPES = {
+    INCOME: "income",
+    EXPENSE: "expese"
+}
+
+const OPERATIONS = [
+    {
+        id: 1,
+        category: "products",
+        value: 3000,
+        type: "expense",
+        data: new Date()
+    },
+    {
+        id: 2,
+        category: "salary",
+        value: 50315,
+        type: "income",
+        data: new Date()
+    },
+    {
+        id: 3,
+        category: "car",
+        value: 20000,
+        type: "expense",
+        data: new Date()
+    }
+];
+
+
+// Форматирование чисел
+const formatNumber = (value) => {
+    return Intl.NumberFormat('ru-RU').format(parseInt(value));
+}
+
+// Ф-я форматирования для денег
+const formatMoney =(value) => {
+    return `${formatNumber(value)} руб.`;
+}
+
 const HomePage = () => {
     return (
         <section>
             <div className="container">
                 <div className="balance">
                     <h2>
-                        Общий баланс руб.
+                        {formatMoney(50275)}
                     </h2>
                 </div>
 
@@ -15,7 +55,7 @@ const HomePage = () => {
                         </h3>
 
                         <div className="wrapper">
-                            <input type="number" name="balance" placeholder="30 000" />
+                            <input type="text" name="balance" placeholder="30 000" />
 
                             <select name="category">
                                 <option value="products">Продукты</option>
@@ -32,17 +72,32 @@ const HomePage = () => {
                         Операции
                     </h2>
                     <div className="filter">
-                        <button>Все операции</button>
-                        <button>Все доходы</button>
-                        <button>Все расходы</button>
+                        <button className="button sm">Все операции</button>
+                        <button className="button sm green">Все доходы</button>
+                        <button className="button sm red">Все расходы</button>
                     </div>
 
                     <div className="operations">
-                        <div className="operation">
-                            <h4 className="total">30 000 руб.</h4>
-                            <p className="category">Категория: автомобиль</p>
-                            <button className="button button--remove">Удалить</button>
-                        </div>
+                        {
+                            OPERATIONS.map((operation) => {
+                                return (
+                                    <div key={operation.id} className="operation">
+                                        <div className={`circle ${operation.type === OPEATION_TYPES.INCOME ? "income" : "expense"}`}>
+                                            {
+                                                operation.type === OPEATION_TYPES.INCOME ?
+                                                <i className="fa-solid fa-money-bill"></i>
+                                                :
+                                                <i className="fa-solid fa-shop"></i>
+                                            }
+                                        </div>
+
+                                        <p className="category">Категория: {operation.category}</p>
+                                        <p className="total">{formatMoney(operation.value)}</p>
+                                        <button className="button button--remove">Удалить</button>
+                                    </div>
+                                );
+                            })
+                        }
                     </div>
 
                     <div className="pagination">
