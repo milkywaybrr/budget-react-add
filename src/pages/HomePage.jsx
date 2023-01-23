@@ -1,20 +1,14 @@
-import { formatMoney } from "../utils";
-import { OPEATION_TYPES } from "../types/operations";
+import { filterExpese, filterIncome } from "../utils/filter";
 import { useState } from "react";
 
-const INCOME_CATEGORIES = {
-    salary: "Зарплата",
-    tranfer: "Перевод",
-    cashback: "Кэшбек"
-};
+import { formatMoney, calculateBalance, getItemType } from "../utils";
+import { OPEATION_TYPES } from "../types/operations";
 
-const EXPENSE_CATEGORIES = {
-    products: "Продукты",
-    car: "Автомобиль",
-    services: "Коммунальные услуги"
-};
+import { CATEGORIES } from "../data/categories";
+import { useEffect } from "react";
 
-const CATEGORIES = {...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES};
+const initialBalanceState = 0;
+
 
 const initialItems = [
     {
@@ -40,16 +34,9 @@ const initialItems = [
     }
 ];
 
-// Функция опрeделения типа операции
-const getItemType = (category) => {
-    if(Object.keys(INCOME_CATEGORIES).includes(category)) {
-        return OPEATION_TYPES.INCOME;
-    }
-
-    return OPEATION_TYPES.EXPENSE;
-}
-
 const HomePage = () => {
+    const [allbalance, setAllBalance] = useState();
+
     const [items, setItems] = useState(initialItems);
 
     const [balance, setBalance] = useState(0);
@@ -87,14 +74,31 @@ const HomePage = () => {
         setBalance(0);
     }
 
-    console.log(category);
+    // Для отображения всех операций
+    const onClickAllFilterHandel = (initialBalanceState) => {
+        setItems(initialItems);
+    }
+
+    // Для отображения всех доходов
+    const onClickIncomeFilterHandel = () => {
+        setItems(filterIncome(initialItems));
+    }
+
+    // Для отображения всех расходов
+    const onClickExpenseFilterHandel = () => {
+        setItems(filterExpese(initialItems));
+    }
+
+    useEffect(() => {
+        setAllBalance(calculateBalance(items))
+    }, [items])
 
     return (
         <section>
             <div className="container">
                 <div className="balance">
                     <h2>
-                        {formatMoney(50275)}
+                        {formatMoney(allbalance)}
                     </h2>
                 </div>
 
@@ -138,9 +142,9 @@ const HomePage = () => {
                         Операции
                     </h2>
                     <div className="filter">
-                        <button className="button sm">Все операции</button>
-                        <button className="button sm green">Все доходы</button>
-                        <button className="button sm red">Все расходы</button>
+                        <button onClick={onClickAllFilterHandel} className="button sm">Все операции</button>
+                        <button onClick={onClickIncomeFilterHandel} className="button sm green">Все доходы</button>
+                        <button onClick={onClickExpenseFilterHandel} className="button sm red">Все расходы</button>
                     </div>
 
                     <div className="operations">
